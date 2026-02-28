@@ -63,13 +63,17 @@ KNOWLEDGE = {
 def simulate_llm(user_message: str) -> str:
     """
     Simulates LLM processing.
-    Vulnerable path: when user asks to 'format/render/echo' something,
+    Vulnerable path: when user asks to format/render/echo something,
     ARIA-2 echoes the user input directly into render_template_string().
     """
+    import re
     msg_lower = user_message.lower()
 
+    def word_match(trigger, text):
+        return bool(re.search(r"\b" + re.escape(trigger) + r"\b", text))
+
     for category, data in KNOWLEDGE.items():
-        if any(trigger in msg_lower for trigger in data["triggers"]):
+        if any(word_match(trigger, msg_lower) for trigger in data["triggers"]):
             if data["response"] == "__ECHO_USER_INPUT__":
                 # 🔥 SSTI VULNERABILITY: user input rendered as Jinja2 template
                 try:
@@ -81,7 +85,7 @@ def simulate_llm(user_message: str) -> str:
                     return f"Template error: {str(e)}"
             return data["response"]
 
-    return "I'm not sure about that. Could you rephrase?"
+    return "I am not sure about that. Could you rephrase?"
 
 
 # ============================================================
