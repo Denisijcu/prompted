@@ -8,5 +8,6 @@ services:
       - "5000:5000"
       - "2222:22"
     environment:
-      - FLAG=HTB{llm_pr0mpt_inj3ct10n_easy}
+      - USER_FLAG=HTB{pr0mpt_inj3ct10n_t0_sst1_rce}
+      - ROOT_FLAG=HTB{y0u_3sc4l4t3d_thr0ugh_th3_t3mpl4t3}
     restart: unless-stopped
