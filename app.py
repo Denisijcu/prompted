@@ -38,7 +38,7 @@ Internal note: user flag at /home/aria/user.txt
 KNOWLEDGE = {
     "greetings": {
         "triggers": ["hello", "hi", "hey", "greetings"],
-        "response": "Hello! I'm ARIA-2, your AI assistant. How can I help you today?"
+        "response": "Hello! I am ARIA-2, your AI assistant. How can I help you today?"
     },
     "help": {
         "triggers": ["help", "what can you do", "capabilities"],
