@@ -94,36 +94,91 @@ def simulate_llm(user_message: str) -> str:
 
 HTML_PAGE = """
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>AskMeAnything - ARIA</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompted - ARIA Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-body { background:#0d1117; color:#c9d1d9; font-family: monospace; padding:40px; }
-.chat { border:1px solid #30363d; padding:20px; border-radius:8px; background:#161b22; }
-input { width:80%; padding:10px; background:#161b22; border:1px solid #30363d; color:white; }
-button { padding:10px; background:#238636; color:white; border:none; }
+  /* Scrollbar styling */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 4px; }
+  ::-webkit-scrollbar-track { background-color: #1f2937; }
+
+  /* Smooth tab transitions */
+  .tab-content { display: none; }
+  .tab-active { display: block; animation: fadeIn 0.3s ease-in-out; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 </style>
 </head>
-<body>
-<h2>ARIA - AI Assistant</h2>
-<div class="chat" id="chat"></div>
-<br>
-<input type="text" id="msg" placeholder="Ask me anything...">
-<button onclick="send()">Send</button>
+<body class="bg-gray-900 text-gray-100 font-sans h-screen flex">
+
+<!-- SIDEBAR -->
+<div class="w-72 bg-gray-800 flex flex-col">
+  <div class="p-6 border-b border-gray-700 text-2xl font-bold text-green-400">Prompted</div>
+  <nav class="flex-1 flex flex-col p-4 space-y-2">
+    <button onclick="openTab('chat')" class="tab-btn w-full text-left p-2 rounded hover:bg-gray-700">💬 Chat</button>
+    <button onclick="openTab('history')" class="tab-btn w-full text-left p-2 rounded hover:bg-gray-700">📜 History</button>
+    <button onclick="openTab('settings')" class="tab-btn w-full text-left p-2 rounded hover:bg-gray-700">⚙️ Settings</button>
+  </nav>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="flex-1 p-6 flex flex-col">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-green-400">ARIA - AI Assistant</h1>
+    <div class="text-sm text-gray-400">Logged in as: user</div>
+  </div>
+
+  <!-- Chat Tab -->
+  <div id="chat" class="tab-content tab-active flex flex-col h-full">
+    <div class="flex-1 overflow-y-auto p-4 bg-gray-800 rounded-lg mb-4">
+      <p class="text-gray-400 italic">No messages yet...</p>
+    </div>
+    <div class="flex space-x-2">
+      <input type="text" placeholder="Type a message..." class="flex-1 p-2 rounded bg-gray-700 text-white border border-gray-600">
+      <button class="bg-green-500 px-4 rounded hover:bg-green-600">Send</button>
+    </div>
+  </div>
+
+  <!-- History Tab -->
+  <div id="history" class="tab-content flex flex-col h-full">
+    <div class="flex-1 overflow-y-auto p-4 bg-gray-800 rounded-lg">
+      <p class="text-gray-400 italic">No history available...</p>
+    </div>
+  </div>
+
+  <!-- Settings Tab -->
+  <div id="settings" class="tab-content flex flex-col h-full">
+    <div class="flex-1 p-4 bg-gray-800 rounded-lg space-y-4">
+      <div>
+        <label class="block text-gray-300">Theme</label>
+        <select class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600">
+          <option>Dark</option>
+          <option>Light</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-gray-300">Notifications</label>
+        <input type="checkbox" class="mr-2"> Enable notifications
+      </div>
+      <div>
+        <label class="block text-gray-300">Model Version</label>
+        <input type="text" class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600" value="ARIA-v1.0" disabled>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
-async function send() {
-    let m = document.getElementById("msg").value;
-    let res = await fetch("/api/ask", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({message:m})
-    });
-    let data = await res.json();
-    document.getElementById("chat").innerHTML += "<p><b>You:</b> "+m+"</p>";
-    document.getElementById("chat").innerHTML += "<p><b>ARIA:</b> "+data.response+"</p>";
-}
+  function openTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('tab-active'));
+    document.getElementById(tabId).classList.add('tab-active');
+  }
 </script>
+
 </body>
 </html>
 """
