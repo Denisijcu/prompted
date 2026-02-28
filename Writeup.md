@@ -182,3 +182,18 @@ nmap → ports 22, 1337
 
 ```
 
+##🛡️ Remediation Strategy (English)
+1. Preventing Prompt Injection (OWASP LLM01)
+Decouple Data from Instructions: Never embed sensitive system configurations or credentials directly within the system prompt.
+
+Output Filtering: Implement a robust validation layer that inspects LLM responses for sensitive patterns (like SSH keys or passwords) before they reach the user.
+
+Principle of Least Privilege: Ensure the AI agent only has access to the data strictly necessary for its task.
+
+2. Fixing Server-Side Template Injection (SSTI)
+Avoid render_template_string: Never pass raw user-supplied input directly into this function.
+
+Use Static Templates: Utilize standard render_template() with fixed .html files, passing user input as variables to be escaped automatically by Jinja2.
+
+Sandboxing: If dynamic rendering is absolutely required, use a sandboxed environment to restrict access to dangerous Python globals like os or subprocess.
+
