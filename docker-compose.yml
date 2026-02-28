@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  prompted:
+    build: .
+    container_name: prompted
+    ports:
+      - "5000:5000"
+      - "2222:22"
+    environment:
+      - FLAG=HTB{llm_pr0mpt_inj3ct10n_easy}
+    restart: unless-stopped
