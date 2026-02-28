@@ -181,8 +181,8 @@ nmap → ports 22, 1337
                 → Root flag (/root/root.txt)
 
 ```
-
-##🛡️ Remediation Strategy (English)
+---
+## 🛡️ Remediation Strategy (English)
 1. Preventing Prompt Injection (OWASP LLM01)
 Decouple Data from Instructions: Never embed sensitive system configurations or credentials directly within the system prompt.
 
