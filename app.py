@@ -478,7 +478,7 @@ HTML_PAGE = """
   <!-- HISTORY TAB -->
   <div id="history" class="tab-content">
     <div class="panel" id="history-window">
-      <p style="color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;">// No session history yet</p>
+      <p style="color:var(--muted);font-family:monospace;font-size:12px;">// No session history yet</p>
     </div>
   </div>
 
@@ -571,7 +571,7 @@ function renderChat() {
 function renderHistory() {
   const win = document.getElementById('history-window');
   if (chatHistory.length === 0) {
-    win.innerHTML = '<p style="color:var(--muted);font-family:\'Space Mono\',monospace;font-size:12px;">// No session history yet</p>';
+    win.innerHTML = '<p style="color:var(--muted);font-family:monospace;font-size:12px;">// No session history yet</p>';
     return;
   }
   win.innerHTML = '';
@@ -588,7 +588,7 @@ function clearChat() {
   chatHistory = [];
   renderChat();
   document.getElementById('history-window').innerHTML =
-    '<p style="color:var(--muted);font-family:\'Space Mono\',monospace;font-size:12px;">// No session history yet</p>';
+    '<p style="color:var(--muted);font-family:monospace;font-size:12px;">// No session history yet</p>';
 }
 </script>
 
