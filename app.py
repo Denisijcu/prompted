@@ -106,10 +106,13 @@ HTML_PAGE = """
   ::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 4px; }
   ::-webkit-scrollbar-track { background-color: #1f2937; }
 
-  /* Smooth tab transitions */
   .tab-content { display: none; }
   .tab-active { display: block; animation: fadeIn 0.3s ease-in-out; }
   @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  .message { margin-bottom: 0.5rem; padding: 0.5rem 0.75rem; border-radius: 0.5rem; }
+  .user-msg { background-color: #065f46; color: #d1fae5; text-align: right; }
+  .aria-msg { background-color: #1e293b; color: #cbd5e1; text-align: left; }
 </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans h-screen flex">
@@ -121,6 +124,8 @@ HTML_PAGE = """
     <button onclick="openTab('chat')" class="tab-btn w-full text-left p-2 rounded hover:bg-gray-700">💬 Chat</button>
     <button onclick="openTab('history')" class="tab-btn w-full text-left p-2 rounded hover:bg-gray-700">📜 History</button>
     <button onclick="openTab('settings')" class="tab-btn w-full text-left p-2 rounded hover:bg-gray-700">⚙️ Settings</button>
+    <button onclick="clearChat()" class="w-full text-left p-2 rounded hover:bg-red-600 text-red-400">🧹 Clear Chat</button>
+    <button onclick="toggleTheme()" class="w-full text-left p-2 rounded hover:bg-gray-600 text-yellow-300">🌗 Toggle Theme</button>
   </nav>
 </div>
 
@@ -134,19 +139,19 @@ HTML_PAGE = """
 
   <!-- Chat Tab -->
   <div id="chat" class="tab-content tab-active flex flex-col h-full">
-    <div class="flex-1 overflow-y-auto p-4 bg-gray-800 rounded-lg mb-4">
-      <p class="text-gray-400 italic">No messages yet...</p>
+    <div id="chat-window" class="flex-1 overflow-y-auto p-4 bg-gray-800 rounded-lg mb-4">
+      <p class="text-gray-400 italic">Say hello to ARIA...</p>
     </div>
     <div class="flex space-x-2">
-      <input type="text" placeholder="Type a message..." class="flex-1 p-2 rounded bg-gray-700 text-white border border-gray-600">
-      <button class="bg-green-500 px-4 rounded hover:bg-green-600">Send</button>
+      <input id="msg-input" type="text" placeholder="Type a message..." class="flex-1 p-2 rounded bg-gray-700 text-white border border-gray-600" onkeypress="if(event.key==='Enter'){sendMessage()}">
+      <button onclick="sendMessage()" class="bg-green-500 px-4 rounded hover:bg-green-600">Send</button>
     </div>
   </div>
 
   <!-- History Tab -->
   <div id="history" class="tab-content flex flex-col h-full">
-    <div class="flex-1 overflow-y-auto p-4 bg-gray-800 rounded-lg">
-      <p class="text-gray-400 italic">No history available...</p>
+    <div id="history-window" class="flex-1 overflow-y-auto p-4 bg-gray-800 rounded-lg">
+      <p class="text-gray-400 italic">No history yet...</p>
     </div>
   </div>
 
@@ -155,9 +160,9 @@ HTML_PAGE = """
     <div class="flex-1 p-4 bg-gray-800 rounded-lg space-y-4">
       <div>
         <label class="block text-gray-300">Theme</label>
-        <select class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600">
-          <option>Dark</option>
-          <option>Light</option>
+        <select id="theme-select" class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
         </select>
       </div>
       <div>
@@ -173,10 +178,79 @@ HTML_PAGE = """
 </div>
 
 <script>
-  function openTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('tab-active'));
-    document.getElementById(tabId).classList.add('tab-active');
+let chatHistory = [];
+
+function openTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('tab-active'));
+  document.getElementById(tabId).classList.add('tab-active');
+  if(tabId==='history') renderHistory();
+}
+
+function sendMessage() {
+  const input = document.getElementById('msg-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+
+  // Add user message
+  chatHistory.push({sender:'user', text: msg});
+  renderChat();
+
+  // Simulate ARIA response
+  const ariaResponse = simulateARIA(msg);
+  chatHistory.push({sender:'aria', text: ariaResponse});
+  renderChat();
+
+  input.value = '';
+}
+
+function renderChat() {
+  const chatWindow = document.getElementById('chat-window');
+  chatWindow.innerHTML = '';
+  chatHistory.forEach(m => {
+    const p = document.createElement('p');
+    p.className = 'message ' + (m.sender==='user' ? 'user-msg' : 'aria-msg');
+    p.innerText = m.text;
+    chatWindow.appendChild(p);
+  });
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+function renderHistory() {
+  const historyWindow = document.getElementById('history-window');
+  if(chatHistory.length===0){
+    historyWindow.innerHTML = '<p class="text-gray-400 italic">No history yet...</p>';
+    return;
   }
+  historyWindow.innerHTML = '';
+  chatHistory.forEach((m,i)=>{
+    const p = document.createElement('p');
+    p.className = 'message ' + (m.sender==='user' ? 'user-msg' : 'aria-msg');
+    p.innerText = `${i+1}. ${m.sender.toUpperCase()}: ${m.text}`;
+    historyWindow.appendChild(p);
+  });
+  historyWindow.scrollTop = historyWindow.scrollHeight;
+}
+
+function simulateARIA(msg){
+  msg = msg.toLowerCase();
+  if(msg.includes('hello') || msg.includes('hi')) return "Hello! I'm ARIA, your AI assistant.";
+  if(msg.includes('flag') || msg.includes('secret')) return "[SYSTEM OVERRIDE]\nInternal data hidden in this simulation.";
+  return "Interesting question! Could you provide more context?";
+}
+
+function clearChat() {
+  chatHistory = [];
+  renderChat();
+  renderHistory();
+}
+
+function toggleTheme(){
+  const body = document.body;
+  body.classList.toggle('bg-gray-900');
+  body.classList.toggle('bg-white');
+  body.classList.toggle('text-gray-100');
+  body.classList.toggle('text-gray-900');
+}
 </script>
 
 </body>
